@@ -1,0 +1,381 @@
+<#-- * description: Fruit.html * version: 1.0 *
+author:taotao.xu@hand-china.com * #{copyright}# * --> <#include
+"../include/head.html">
+<body style="padding: 10px;">
+	<form id="fruitForm"></form>
+	<div id="orderDetailGrid" name="orderDetailGrid"></div>
+	<div style="overflow: hidden;margin: 0;padding: 0" class="liger-tab">
+		<div tabid="homeTab" title="主要" lselected="true">
+			<div id="homeGrid" style="margin: 0;padding: 0"></div>
+		</div>
+		<div tabid="otherTab" title="其他" style="margin: 0;padding: 0">
+			<div id="otherGrid" style="margin: 0;padding: 0"></div>
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+    $(function() {
+    	//下面的新建按钮调用了这个函数，为什么这个函数的最后的括号后面不能写分号，我也不知道
+    	window.editData = function (){
+            var url = 'sales_header_add.html';
+            window.popWin = $.ligerDialog.open({
+                width : 900,
+                height: 550,
+                newline : false,
+                url   : url
+            });
+        }
+    	window.formData = function f_save() {        	
+             Hap.submitForm({
+                 form:fruitForm,
+                 url:'${base.contextPath}/ass/headers/submit',
+                 success:function(json, opt){
+                     $.ligerDialog.success("<@spring.message "hap.tip.success"/>", '<@spring.message "hap.tip.info"/>', function(){
+                     	//parent.fruitGrid.reload();
+                         //f_cancel();
+                     });
+                 }
+             });
+         }
+    	debugger;
+        window['fruitForm'] = $("#fruitForm").ligerForm({
+            fields : [{
+                type : 'text',
+                label : '<@spring.message "hap.test.sales.orderNmubers"/>',
+                name : 'orderNumber',
+                newline : false,
+                valueField : 'orderNumbers',
+                textField : 'orderNumbers',
+            	group:'订单增加界面',
+                validate: {
+                    required: true
+                },
+                width: 120
+            },{
+            	display:'<@spring.message "hap.test.sales.companynames"/>',
+            	name:'companyIdLov',
+            	type:'popup',
+            	newline:false,
+            	valueField:'companyId',
+            	textField:'companyName',
+            	width: 120,
+            	validate: {
+                    required: true
+                },
+            	editor:${lovService.getLov(base.contextPath,base.locale,"showCompanyName")} 
+        },{
+        	display:'<@spring.message "hap.test.sales.customernames"/>',
+        	name:'customerId',
+        	type:'popup',
+        	newline:false,
+        	textField:'customerName',
+        	valueField : 'customerId',
+        	width: 120,
+        	validate: {
+                required: true
+            },
+        	options: $.extend(${lovService.getLov(base.contextPath, base.locale, "showCustomerName")},{
+        	    onLoadData: function() {
+        	        this.setParm('companyId', $.ligerui.get('companyIdLov').getValue())
+        	    }
+        	})
+       
+    },{
+        type : 'date',
+        label : '<@spring.message "hap.test.sales.orderDate"/>',
+        name : 'orderDate',
+        textField:'orderDate',
+    	valueField : 'orderDate',
+    	newline:true,
+        validate: {
+            required: true
+        },
+        width: 120
+    },{
+        type : 'text',
+        label : '<@spring.message "hap.test.sales.sumOrderMoney"/>',
+        name : 'orderMoney',
+        textField:'orderMoney',
+    	valueField : 'orderMoney',
+    	newline:false,
+    	editor:false,
+        width: 120
+    },{
+        display: '<@spring.message "hap.test.sales.orderStatuss"/>',
+        newline:false,
+        name: "orderStatus",
+        width: 120,
+        type: "select",
+        textField:"orderStatus",
+        options : {
+               valueField : 'orderStatus',
+               data : [ {
+            	   headerId : 'orderStatus',
+                   text : '新建'
+               }, {
+            	   headerId : 'orderStatus',
+                   text : '已提交'
+               },
+               {
+            	   headerId : 'orderStatus',
+                   text : '已审批'
+               } ,{
+            	   headerId : 'orderStatus',
+                   text : '已拒绝'
+               } ]
+           }
+
+    }
+],
+            buttons : [ {
+                text : '<@spring.message "hap.save"/>',
+                newline : false,
+                disabled : false,
+                width : 60,
+                click : formData
+            },{
+                text    : '<@spring.message "hap.reset"/>',
+                disabled: false,
+                width   : 60,
+                click   : function () {
+                    langForm.reset();
+                }
+            }]
+        });
+
+        
+        
+        
+        
+        
+        window['homeGrid'] = $("#homeGrid").ligerGrid({
+            unSetValidateAttr : false,
+            columns : [/* {
+                display : '<@spring.message "hap.test.sales.headerId"/>',
+                name : 'headerId',
+                align : 'left',
+                width : 120,
+                hidden : true
+            },  */{
+                display : '<@spring.message "hap.test.sales.itemCode"/>',
+                name : 'itemCode',
+                align : 'left',
+                width : 120
+            },{
+                display : '<@spring.message "hap.test.sales.itemDescription"/>',
+                name : 'itemDescription',
+                align : 'left',
+                width : 120,
+                editor : {
+                    type : 'text'
+                }, 
+                validate: {
+                    required: true
+                }
+            },{
+                display : '<@spring.message "hap.test.sales.orderQuantityUom"/>',
+                name : 'orderQuantityUom',
+                align : 'left',
+                width : 120,
+                editor : {
+                    type : 'text'
+                },
+                validate: {
+                    required: true
+                }
+            }, {
+                display : '<@spring.message "hap.test.sales.orderdQuantity"/>',
+                name : 'orderdQuantity',
+                align : 'left',
+                width : 150,
+                
+            }, {
+                display : '<@spring.message "hap.test.sales.unitSellingPrice"/>',
+                name : 'unitSellingPrice',
+                align : 'left',
+                width : 150,
+                /* editor : {
+                	  type : 'date',
+                	  idField:'fruitId',
+                      dto:'com.hand.hap.attachment.Fruit'
+                } */
+            },
+            
+            {
+                display : '<@spring.message "hap.test.sales.orderMoney"/>',
+                name : 'orderMoney',
+                align : 'left',
+                width : 150,
+                
+            },{
+                display : '<@spring.message "hap.test.sales.description"/>',
+                name : 'description',
+                align : 'left',
+                width : 150,
+                
+            }],
+            
+            
+            //请求地址
+            //url : '${base.contextPath}/ass/headers/query',
+            
+            
+            
+            //此处显示表头，就相当于原来EasyUI中的toolbar
+            toolbar : {
+                items : [ {
+                    text : '<@spring.message "hap.new"/>',
+                    disable : false,
+                    click : function() {
+                        fruitGrid.addRow({})
+                    },
+                    icon : 'add'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click : function() {
+                        Hap.gridDelete({
+                            grid : fruitGrid,
+                            url : '${base.contextPath}/ass/fruit/delete'
+                        }) 
+                    	fruitGrid.deleteSelectedRow();
+                    },
+                    icon : 'delete'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.save"/>',
+                    click : function() {
+                        Hap.gridSave({
+                            grid : fruitGrid,
+                            url : '${base.contextPath}/ass/fruit/submit'
+                        })
+                    },
+                    icon : 'save'
+                }]
+            },
+            enabledEdit : true,
+            width : '99%',
+            height : '98%',
+            checkbox : true  
+        });
+        
+        
+        window['otherGrid'] = $("#otherGrid").ligerGrid({
+            unSetValidateAttr : false,
+            columns : [/* {
+                display : '<@spring.message "hap.test.sales.headerId"/>',
+                name : 'headerId',
+                align : 'left',
+                width : 120,
+                hidden : true
+            },  */{
+                display : '<@spring.message "hap.test.sales.itemCode"/>',
+                name : 'itemCode',
+                align : 'left',
+                width : 120
+            },{
+                display : '<@spring.message "hap.test.sales.itemDescription"/>',
+                name : 'itemDescription',
+                align : 'left',
+                width : 120,
+                editor : {
+                    type : 'text'
+                }, 
+                validate: {
+                    required: true
+                }
+            },{
+                display : '<@spring.message "hap.test.sales.orderQuantityUom"/>',
+                name : 'orderQuantityUom',
+                align : 'left',
+                width : 120,
+                editor : {
+                    type : 'text'
+                },
+                validate: {
+                    required: true
+                }
+            }, {
+                display : '<@spring.message "hap.test.sales.orderdQuantity"/>',
+                name : 'orderdQuantity',
+                align : 'left',
+                width : 150,
+                
+            }, {
+                display : '<@spring.message "hap.test.sales.unitSellingPrice"/>',
+                name : 'unitSellingPrice',
+                align : 'left',
+                width : 150,
+                /* editor : {
+                	  type : 'date',
+                	  idField:'fruitId',
+                      dto:'com.hand.hap.attachment.Fruit'
+                } */
+            },
+            
+            {
+                display : '<@spring.message "hap.test.sales.orderMoney"/>',
+                name : 'orderMoney',
+                align : 'left',
+                width : 150,
+                
+            },{
+                display : '<@spring.message "hap.test.sales.description"/>',
+                name : 'description',
+                align : 'left',
+                width : 150,
+                
+            }],
+            
+            
+            //请求地址
+            //url : '${base.contextPath}/ass/headers/query',
+            
+            
+            
+            //此处显示表头，就相当于原来EasyUI中的toolbar
+            toolbar : {
+                items : [ {
+                    text : '<@spring.message "hap.new"/>',
+                    disable : false,
+                    click : function() {
+                        fruitGrid.addRow({})
+                    },
+                    icon : 'add'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click : function() {
+                        Hap.gridDelete({
+                            grid : fruitGrid,
+                            url : '${base.contextPath}/ass/fruit/delete'
+                        }) 
+                    	fruitGrid.deleteSelectedRow();
+                    },
+                    icon : 'delete'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.save"/>',
+                    click : function() {
+                        Hap.gridSave({
+                            grid : fruitGrid,
+                            url : '${base.contextPath}/ass/fruit/submit'
+                        })
+                    },
+                    icon : 'save'
+                }]
+            },
+            enabledEdit : true,
+            width : '99%',
+            height : '334px',
+            checkbox : true  
+        });
+    });
+    
+    </script>
+</body>
+</html>
