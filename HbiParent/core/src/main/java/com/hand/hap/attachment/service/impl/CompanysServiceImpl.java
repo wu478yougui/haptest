@@ -65,4 +65,12 @@ public class CompanysServiceImpl extends BaseServiceImpl<Companys> implements IC
 		PageHelper.startPage(page, pagesize);
 		return companysMapper.selectByCompanys(companys);
 	}
+
+
+
+	@Override
+	public int selectCompanyId(IRequest requestContext, Companys companys) {
+		// TODO Auto-generated method stub
+		return companysMapper.selectCompanyId(companys);
+	}
 }

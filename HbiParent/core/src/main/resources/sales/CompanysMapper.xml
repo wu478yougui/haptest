@@ -23,5 +23,14 @@
         </where>
     </select>
     
+    <select id="selectCompanyId" parameterType="com.hand.hap.attachment.dto.Companys" resultType="int">
+		SELECT COMPANY_ID
+		  FROM hap_org_companys 
+		<where>
+        	<if test="companyName != null">
+               COMPANY_NAME = #{companyName,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
 
 </mapper>

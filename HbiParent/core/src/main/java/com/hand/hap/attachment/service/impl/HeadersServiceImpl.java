@@ -31,15 +31,12 @@ public class HeadersServiceImpl extends BaseServiceImpl<Headers> implements IHea
 	//@Transactional这个注解表示此方法运用事务
 	//SUPPORTS：支持当前事务，如果当前没有事务，就以非事务方式执行。 
 	@Transactional(propagation = Propagation.SUPPORTS)
-    public List<Headers> batchUpdate(IRequest requestContext, List<Headers> headers) {
+    public void batchUpdate(IRequest requestContext, Headers headers){
         // TODO Auto-generated method stub
-        for (Headers header : headers) {
-            if (header!= null) {
-            	System.out.println(header.toString());
-                	orderHeaderMapper.insertHeaders(header);
-                }
+            if (headers!= null) {
+            	System.out.println(headers.toString());
+                	orderHeaderMapper.insertHeaders(headers);
             }
-        return headers;
     }
 	
 	

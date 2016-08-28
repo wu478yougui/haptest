@@ -1,0 +1,373 @@
+<#-- * description: sales_order_detail.html * version: 1.0 *
+author:zhiwei.zhang@hand-china.com * #{copyright}# * --> <#include
+"../include/head.html">
+<body style="padding: 10px;">
+	<form id="orderDetailForm"></form>
+	<div style="overflow: hidden; margin: 0; padding: 0;" class="liger-tab">
+		<div tabid="home" title="主要" lselected="true"
+			style="margin: 0; padding: 0">
+			<div id="orderDetailGrid" style="margin: 0; padding: 0"></div>
+		</div>
+		<div title="其他" style="margin: 0; padding: 0;">
+			<div id="otherDetailGrid" style="margin: 0; padding: 0;"></div>
+		</div>
+	</div>
+	<script type="text/javascript">
+
+		<#assign isedit = (RequestParameters.isedit!'0')/>
+		
+		var _isedit;
+		<#if isedit == '0'>
+			_isedit = 0;
+    	</#if>
+		<#if isedit == '1'>
+			_isedit = 1;
+    	</#if>
+		
+		function getCurrentDate(){
+			var today = new Date();
+			var currentDate = today.getFullYear() + "-" + today.getMonth() + "-" + today.getDate();        	
+			alert(currentDate);
+			return currentDate;
+		}
+		
+		function f_save(){        	
+            Hap.submitForm({
+                form:form,
+                url:'${base.contextPath}/ass/headers/submit',
+                success:function(json, opt){
+                	alert("success");
+                    $.ligerDialog.success("<@spring.message "hap.tip.success"/>", '<@spring.message "hap.tip.info"/>', function(){
+                    	//parent.fruitGrid.reload();
+                        //f_cancel();
+                    });
+                },
+                failure:function(){
+                	alert("failure");
+                }
+            });
+        }
+		
+    	var orderDetailForm = $("#orderDetailForm");
+        var form = orderDetailForm.ligerForm({
+            fields : [{
+                display : '<@spring.message "hap.test.sales.orderNmubers"/>',
+                name : "orderNumber",
+                type : 'text',
+                width: 120,
+                newline : false,
+                textField:'orderNumber',
+                valueField : 'orderNumber',
+                validate : {
+                    required : true
+                }
+            },{
+                display : '<@spring.message "hap.test.sales.companynames"/>',
+                name : "companyNameLov",
+                type : "popup",
+                width: 120,
+                newline : false,
+                textField:'companyName',
+                valueField : 'companyId',
+                validate : {
+                    required : true
+                },
+                options:${lovService.getLov(base.contextPath, base.locale, "showCompanyName")}
+            },{
+                display : '<@spring.message "hap.test.sales.customernames"/>',
+                name : "customerNameLov",
+                type : "popup",
+                width: 120,
+                newline : false,
+                textField:'customerName',
+                valueField : 'customerId',
+                validate : {
+                    required : true
+                },
+                options: $.extend(${lovService.getLov(base.contextPath, base.locale, "showCustomerName")}, {
+                	onLoadData: function() {
+                       this.setParm('companyId', $.ligerui.get('companyNameLov').getValue())
+                   }
+                })
+            },{
+                label : '<@spring.message "hap.test.sales.orderDate"/>',
+                name : 'orderDate',
+                newline : true,               
+                type :'date',
+                format : "yyyy-MM-dd",
+   			 	width : 120,
+				options: {
+					showTime : true,
+	                format : "yyyy-MM-dd",
+	                onChangeDate: function (){
+	                	var g = this;
+	                    if (liger.get("orderDate").getValue() != null) {
+	                        var _orderDate = new Date(liger.get("orderDate").getValue());
+	                        var startDate = new Date('2016-01-01 00:00:00');
+	                        if (_orderDate.getTime() < startDate.getTime()) {
+	                            alert("只能选择2016年后的日期！");
+	                            g.clear();
+	                        }
+	                    }else{
+	                    	liger.setValue("orderDate", getCurrentDate());
+	                    }
+	                }
+	            },
+   			 	validate : {
+                	required : true
+             	}
+            },{
+                label : '<@spring.message "hap.test.sales.sumOrderMoney"/>',
+                type : 'text',
+                name : 'orderMoney',
+                newline : false,
+                width: 120
+            },{
+            	display: '<@spring.message "hap.test.sales.orderStatuss"/>',
+            	name: "orderStatus",
+            	width: 120,
+            	newline: false,
+            	
+            	textField: "description"
+            	/* <#if isedit == '0'>
+            	type: "select",
+            	options: {
+	        		readonly: false,
+	        		valueField: 'codeValueId',  //后台要获取到的值
+	        		textField: 'description',   //界面显示的值
+	        		//url: '${base.contextPath}/demo/codeValue/query',
+	        		//data :[{codeValueId:'138',description:'新建'}]
+        		}
+            	</#if>
+            	<#if isedit == '1'>
+            	type: "text",
+            	options: {
+	        		readonly: false,
+	        		valueField: 'codeValueId',  //后台要获取到的值
+	        		textField: 'description',   //界面显示的值
+	        		//url: '${base.contextPath}/demo/codeValue/query',
+	        		//triggerToLoad: true
+        		}
+            	</#if> */
+            }],
+            buttons : [ {
+                text : '<@spring.message "hap.save"/>',
+                disabled : false,
+                width : 60,
+                click : function(){f_save();}
+            },{
+                text    : '<@spring.message "hap.submit"/>',
+                disabled: true,
+                width   : 60,
+                click   : function () {
+                	//-----------------
+                }
+            },{
+                text    : '审批',
+                disabled: true,
+                width   : 60,
+                click   : function () {
+                	//-------------------
+                }
+            },{
+                text    : '拒绝',
+                disabled: true,
+                width   : 60,
+                click   : function () {
+                	//-----------------
+                }
+            },{
+                text    : '整单删除',
+                disabled: true,
+                width   : 60,
+                click   : function () {
+                	//-----------------
+                }
+            },{
+                text    : '单据打印',
+                disabled: true,
+                width   : 60,
+                click   : function () {
+                	//-----------------
+                }
+            },{
+                text    : '返回',
+                disabled: false,
+                width   : 60,
+                click   : function () {
+					//关闭弹出窗口
+                	parent.$(".l-dialog,.l-window-mask").remove();
+                }
+            }]
+        });
+        	
+      	//================= main detail =======================   
+      	window['orderDetailGrid'] = $("#orderDetailGrid").ligerGrid({
+            unSetValidateAttr : false,
+            columns : [{
+                display : '行号',
+                name : 'lineNumber',
+                align : 'center',
+                width : 80
+            },{
+                display : '<@spring.message "hap.test.sales.itemCode"/>',
+                name : 'itemCode',
+                align : 'center',
+                width : 120
+            },{
+                display : '<@spring.message "hap.test.sales.itemDescription"/>',
+                name : 'itemDescription',
+                align : 'center',
+                width : 120
+            },{
+                display : '<@spring.message "hap.test.sales.orderQuantityUom"/>',
+                name : 'orderQuantityUom',
+                align : 'center',
+                width : 120
+            }, {
+                display : '<@spring.message "hap.test.sales.orderdQuantity"/>',
+                name : 'orderdQuantity',
+                align : 'center',
+                width : 100
+            }, {
+                display: '<@spring.message "hap.test.sales.unitSellingPrice"/>',
+                name   : 'unitSellingPrice',
+                align  : 'center',
+                width  : 100
+            }, {
+                display: '<@spring.message "hap.test.sales.orderMoney"/>',
+                name   : 'orderSummary',
+                align  : 'center',
+                width  : 120,
+                editor : true 
+            }, {
+                display: '<@spring.message "hap.test.sales.description"/>',
+                name   : 'description',
+                align  : 'center',
+                width  : 120
+            }],
+             <#if isedit == '1'>
+           		url: '${base.contextPath}/ass/orderLines/queryByHeaderId?headerId=${RequestParameters.headerId!}', 
+            </#if> 
+            toolbar : {
+                items : [ {
+                    text : '<@spring.message "hap.new"/>',
+                    disable : false,
+                    click : function() {
+                        orderDetailGrid.addRow({})
+                    },
+                    icon : 'add'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click : function() {
+                        Hap.gridDelete({
+                            grid : fruitGrid,
+                            url : ''
+                        })
+                    	fruitGrid.deleteSelectedRow();
+                    },
+                    icon : 'delete'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.save"/>',
+                    click : function() {
+                        Hap.gridSave({
+                            grid : fruitGrid,
+                            url : ''
+                        })
+                    },
+                    icon : 'save'
+                } ]
+            },
+            enabledEdit : true,
+            width : '99%',
+            height : '98%',
+            checkbox : true
+        });
+        //============== other detail =============================
+        	
+        window['otherDetailGrid'] = $("#otherDetailGrid").ligerGrid({
+            unSetValidateAttr : false,
+            columns : [{
+                display : '行号',
+                name : 'lineNumber',
+                align : 'center',
+                width : 80
+            },{
+                display : '附加信息1',
+                name : 'addition1',
+                align : 'center',
+                width : 120
+            },{
+                display : '附加信息2',
+                name : 'addition2',
+                align : 'center',
+                width : 120
+            },{
+                display : '附加信息3',
+                name : 'addition3',
+                align : 'center',
+                width : 120
+            }, {
+                display : '附加信息4',
+                name : 'addition4',
+                align : 'center',
+                width : 120
+            }, {
+                display: '附加信息5',
+                name   : 'addition5',
+                align  : 'center',
+                width  : 120
+            }],
+            <#if isedit == '1'>
+       		url: '${base.contextPath}/ass/orderLines/queryByHeaderId?headerId=${RequestParameters.headerId!}', 
+        	</#if> 
+            toolbar : {
+                items : [ {
+                    text : '<@spring.message "hap.new"/>',
+                    disable : false,
+                    click : function() {
+                        orderDetailGrid.addRow({})
+                    },
+                    icon : 'add'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click : function() {
+                        Hap.gridDelete({
+                            grid : fruitGrid,
+                            url : ''
+                        })
+                    	fruitGrid.deleteSelectedRow();
+                    },
+                    icon : 'delete'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.save"/>',
+                    click : function() {
+                        Hap.gridSave({
+                            grid : fruitGrid,
+                            url : ''
+                        })
+                    },
+                    icon : 'save'
+                } ]
+            },
+            enabledEdit : true,
+            width : '99%',
+            height : '334px',
+            checkbox : true
+        });	
+        
+        <#if isedit == '1'>
+        	Hap.loadForm({form:form,url:'${base.contextPath}/ass/headers/query',para:{headerId:${RequestParameters.headerId}}})
+        </#if>
+    
+    </script>
+</body>
+</html>

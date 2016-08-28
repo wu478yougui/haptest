@@ -22,4 +22,6 @@ public interface ICompanysService extends IBaseService<Companys>, ProxySelf<ICom
     List<Companys> selectByCompanys(IRequest requestContext, Companys companys, int page, int pagesize);
     
     List<Companys> batchUpdate(IRequest requestContext, @StdWho List<Companys> companys);
+    
+    int selectCompanyId(IRequest requestContext, Companys companys);
 }

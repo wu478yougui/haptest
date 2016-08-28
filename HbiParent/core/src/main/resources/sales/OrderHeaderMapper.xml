@@ -5,6 +5,7 @@
 <mapper namespace="com.hand.hap.attachment.mapper.OrderHeaderMapper">
 
 	<resultMap id="BaseResultMap" type="com.hand.hap.attachment.dto.Headers" extends="com.hand.hap.mapper.StdMapper.STD">
+		 <result column="HEADER_ID" property="headerId" jdbcType="DECIMAL"/>
         <result column="ORDER_NUMBER" property="orderNumber" jdbcType="VARCHAR"/>
         <result column="ORDER_DATE" property="orderDate" jdbcType="DATE"/>
         <result column="ORDER_STATUS" property="orderStatus" jdbcType="VARCHAR"/>
@@ -14,13 +15,14 @@
     </resultMap>
     
 	<select id="selectByOrderHeader" parameterType="com.hand.hap.attachment.dto.Headers" resultMap="BaseResultMap">
-		  select he.ORDER_NUMBER,
+		  select he.HEADER_ID,
+		  		 he.ORDER_NUMBER,
 				 co.COMPANY_NAME,
 				 cus.CUSTOMER_NAME,
 				 he.ORDER_DATE,
 				 he.ORDER_STATUS,
 				 it.INVENTORY_ITEM_ID,
-				 li.ORDERD_QUANTITY * li.UNIT_SELLING_PRICE ORDER_MONEY
+				 sum(li.ORDERD_QUANTITY * li.UNIT_SELLING_PRICE) ORDER_MONEY
 			from hap_ar_customers cus,
 			 	 hap_inv_inventory_items it,
 			 	 hap_om_order_headers he,
@@ -33,6 +35,9 @@
 			 and it.INVENTORY_ITEM_ID = li.INVENTORY_ITEM_ID
 			 and he.COMPANY_ID = co.COMPANY_ID
 			 and he.HEADER_ID = li.HEADER_ID
+			 <if test="headerId != null">
+                and he.header_id like #{headerId,jdbcType=DECIMAL}
+            </if>
         	<if test="companyName != null">
                 and co.company_name like #{companyName,jdbcType=VARCHAR}
             </if>

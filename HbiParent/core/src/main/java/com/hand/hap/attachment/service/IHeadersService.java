@@ -17,7 +17,7 @@ public interface IHeadersService extends IBaseService<Headers>, ProxySelf<IHeade
 
     List<Headers> selectByHeaders(IRequest requestContext, Headers headers, int page, int pagesize);
     
-    List<Headers> batchUpdate(IRequest requestContext, @StdWho List<Headers> headers);
+    void batchUpdate(IRequest requestContext, Headers headers);
     
     
 }

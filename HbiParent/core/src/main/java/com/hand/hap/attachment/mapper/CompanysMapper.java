@@ -18,5 +18,7 @@ public interface CompanysMapper extends Mapper<Companys> {
     int updateCompanys(Companys companys);
     
     int deleteCompanys(Companys companys);
+    
+    int selectCompanyId(Companys companys);
 
 }

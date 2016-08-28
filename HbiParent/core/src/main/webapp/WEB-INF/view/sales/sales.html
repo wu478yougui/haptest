@@ -8,13 +8,16 @@ author:taotao.xu@hand-china.com * #{copyright}# * --> <#include
     $(function() {
     	//下面的新建按钮调用了这个函数，为什么这个函数的最后的括号后面不能写分号，我也不知道
     	window.editData = function (){
-            var url = 'sales_header_add.html';
+            var url = 'sales_order_detail.html'
             window.popWin = $.ligerDialog.open({
                 width : 900,
                 height: 550,
                 url   : url
             });
         }
+    	
+    	
+    	
     	debugger;
         window['fruitForm'] = $("#fruitForm").ligerForm({
             fields : [{
@@ -23,7 +26,7 @@ author:taotao.xu@hand-china.com * #{copyright}# * --> <#include
             	type:'popup',
             	newline:false,
             	textField:'companyName',
-            	group:'订单查询界面',
+            	group:'订单查询界面', 
             	width: 120,
             	validate: {
                     required: true
@@ -131,8 +134,14 @@ author:taotao.xu@hand-china.com * #{copyright}# * --> <#include
         });
 
         
-        
-        
+        window.showorder = function (headerId){
+            var url = 'sales_order_detail.html'
+            window.popWin = $.ligerDialog.open({
+                width : 900,
+                height: 550,
+                url   : url+'?isedit=1&headerId='+headerId
+            });
+        }
         
         
         window['fruitGrid'] = $("#fruitGrid").ligerGrid({
@@ -147,12 +156,15 @@ author:taotao.xu@hand-china.com * #{copyright}# * --> <#include
                 display : '<@spring.message "hap.test.sales.ordernmuber"/>',
                 name : 'orderNumber',
                 align : 'left',
-                width : 120
+                width : 120,
+                render : function (rowdata) {
+                    return '<a href="#" onclick="showorder(' + rowdata.headerId + ')">' + rowdata.orderNumber + '</a>'
+                }
             },{
                 display : '<@spring.message "hap.test.sales.companyName"/>',
                 name : 'companyName',
                 align : 'left',
-                width : 120,
+                width : 120,	
                 editor : {
                     type : 'text'
                 }, 

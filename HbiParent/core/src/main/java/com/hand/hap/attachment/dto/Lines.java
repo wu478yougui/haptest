@@ -21,6 +21,22 @@ public class Lines extends BaseDTO{
 	@Column
 	@NotEmpty
 	private  Long headerId;
+	
+	@Column
+	@NotEmpty
+	private String 	itemCode;
+	public String getItemCode() {
+		return itemCode;
+	}
+	public void setItemCode(String itemCode) {
+		this.itemCode = itemCode;
+	}
+	public Long getOrderSummary() {
+		return orderSummary;
+	}
+	public void setOrderSummary(Long orderSummary) {
+		this.orderSummary = orderSummary;
+	}
 	@Column
 	@NotEmpty
 	private  Long lineNumber;
@@ -33,6 +49,11 @@ public class Lines extends BaseDTO{
 	@Column
 	@NotEmpty
 	private  String orderQuantityUom;
+	
+	@Column
+	@NotEmpty
+	private String itemDescription;
+	
 	@Column
 	@NotEmpty
 	private  Long unitSellingPrice;
@@ -40,9 +61,14 @@ public class Lines extends BaseDTO{
 	@Column
 	@NotEmpty
 	private  String description;
+	
 	@Column
 	@NotEmpty
 	private  Long companyId;
+	
+	@Column
+	@NotEmpty
+	private Long orderSummary;
 	@Column
 	private  String  addition1;
 	@Override
